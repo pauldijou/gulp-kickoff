@@ -1,0 +1,7 @@
+/build
+/node_modules
+/bower_components
+/images/icons.svg
+/test/build
+.sass-cache
+Gemfile.lock
