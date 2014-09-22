@@ -3,8 +3,9 @@ var $           = require('./utils/$');
 var fs          = require('fs');
 var browserSync = require('browser-sync');
 
-prefix = '/api/v1';
-prefixRegExp = new RegExp(prefix + '(.*)');
+var prefix = '/api/v1';
+var prefixRegExp = new RegExp(prefix + '(.*)');
+var middleware;
 
 function jitterResponse(res, content) {
   setTimeout(function () {
@@ -42,8 +43,8 @@ function parseParams(query) {
   return params;
 }
 
-var middleware = if ($.args.mocked) {
-  return function (req, res, next) {
+if ($.config.mocked) {
+  middleware = function (req, res, next) {
     path = req._parsedUrl.pathname;
 
     if (prefixRegExp.test(path)) {
@@ -78,15 +79,15 @@ var middleware = if ($.args.mocked) {
     } else {
       next();
     }
-  }
+  };
 } else {
-  return function (req, res, next) {
+  middleware = function (req, res, next) {
     next();
-  }
+  };
 };
 
 gulp.task('serve', function () {
-  browserSync({
+  var config = {
     server: {
       baseDir: './',
       middleware: middleware
@@ -94,5 +95,11 @@ gulp.task('serve', function () {
     port: 8000,
     open: false,
     notify: false
-  });
+  };
+
+  if (!$.config.sync) {
+    config.ghostMode = false;
+  }
+
+  browserSync(config);
 });

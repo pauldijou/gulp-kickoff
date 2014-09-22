@@ -1,11 +1,26 @@
 var gulp   = require('gulp');
 var $      = require('./utils/$');
 
-gulp.task('clean', ['clean:scripts', 'clean:styles']);
+gulp.task('styles:clean', function () {
+  return gulp.src($.paths.styles.build, {read: false})
+    .pipe($.rimraf());
+});
 
-gulp.task('clean:test', ['clean:test:spec', 'clean:test:e2e']);
+gulp.task('scripts:clean', function () {
+  return gulp.src($.paths.scripts.build, {read: false})
+    .pipe($.rimraf())
+});
 
-gulp.task('clean:build', function () {
-  return gulp.src($.paths.build, {read: false})
+gulp.task('clean', ['scripts:clean', 'styles:clean']);
+
+gulp.task('test:clean', ['unit:clean', 'e2e:clean']);
+
+// gulp.task('build:clean', function () {
+//   return gulp.src($.paths.build.dest, {read: false})
+//     .pipe($.rimraf());
+// });
+
+gulp.task('deploy:clean', function () {
+  return gulp.src($.paths.deploy.dest, {read: false})
     .pipe($.rimraf());
 });

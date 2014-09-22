@@ -3,7 +3,7 @@ var $       = require('./utils/$');
 
 var compile = $.lazypipe()
   .pipe($.plumber, {errorHandler: $.on.error})
-  .pipe($.coffee, {bare: true})
+  .pipe($.typescript)
   // Angular specific
   // .pipe($.ngAnnotate)
   .pipe(gulp.dest, $.paths.scripts.dest)
@@ -11,11 +11,11 @@ var compile = $.lazypipe()
     return $.if($.config.live, $.reloadStream())
   });
 
-gulp.task('coffee', ['scripts:clean'], function () {
-  return gulp.src($.paths.coffee.all).pipe(compile());
+gulp.task('typescript', ['scripts:clean'], function () {
+  return gulp.src($.paths.typescript.all).pipe(compile());
 });
 
-gulp.task ('coffee:watch', ['scripts:clean'], function () {
-  return $.watch({name: 'Coffee', glob: $.paths.coffee.all})
+gulp.task ('typescript:watch', ['scripts:clean'], function () {
+  return $.watch({name: 'TypeScript', glob: $.paths.typescript.all})
     .pipe(compile());
 });

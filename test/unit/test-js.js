@@ -2,8 +2,8 @@
 // of 'coffee-test.coffee'. It's a standalone test
 // written in JavaScript.
 
-define('JavaScript test', function () {
+describe('JavaScript test', function () {
   it('should do something', function () {
-    expect(1)toEqual(1);
+    expect(1).toEqual(1);
   });
 });

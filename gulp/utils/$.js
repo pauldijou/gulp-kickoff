@@ -10,7 +10,7 @@ module.exports = plugins;
 module.exports.reload = browserSync.reload;
 
 module.exports.reloadStream = function () {
-  browserSync.reload({stream: true});
+  return browserSync.reload({stream: true});
 };
 
 // Expose some other modules (local or not)
@@ -35,7 +35,10 @@ module.exports.on = {
 };
 
 // Expose all supported args from command line
-module.exports.args = {
+module.exports.config = {
   mocked: argv.mocked || argv.m,
-  latency: argv.latency || 100
+  latency: argv.latency || 100,
+  sync: argv.sync === undefined || argv.sync !== 'false',
+  live: argv.live === undefined || argv.live !== 'false',
+  autoprefixer: argv.autoprefixer || 'last 1 version'
 };

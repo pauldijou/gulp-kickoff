@@ -11,11 +11,12 @@ module.exports = function(config) {
       '../bower_components/angular-mocks/angular-mocks.js',
       '../bower_components/angular-animate/angular-animate.js',
       '../bower_components/angular-sanitize/angular-sanitize.js',
+      '../scripts/**/*.js',
       '../build/scripts/**/*.js',
       // Loading real JavaScript tests
-      '../test/unit/**/*.js'
+      '../test/unit/**/*.js',
       // Loading JavaScript files compiled from CoffeeScript tests
-      '../test/build/unit/**/*.js',
+      '../test/build/unit/**/*.js'
     ],
 
     preprocessors: {},

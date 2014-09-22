@@ -1,4 +1,4 @@
-var $ = require('./plugins');
+var $ = require('./$');
 
 module.exports = function (error) {
 	console.log(error);

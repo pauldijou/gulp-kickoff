@@ -1,3 +1,3 @@
-define 'CoffeeScript test', ->
+describe 'CoffeeScript test', ->
   it 'should do some stuff', ->
     expect(true).toEqual(true)

@@ -1,7 +1,7 @@
 var gulp    = require('gulp');
 var $       = require('./utils/$');
 
-gulp.task('usemin', ['clean:build', 'build'], function () {
+gulp.task('usemin', ['deploy:clean', 'build'], function () {
   return gulp.src(['./index.html', $.paths.templates.all], {base: './'})
     .pipe($.usemin({
       css: [$.minifyCss(), 'concat', $.rev()],

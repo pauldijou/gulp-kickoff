@@ -1,12 +1,7 @@
 var gulp    = require('gulp');
 var $       = require('./utils/$');
 
-gulp.task('clean:styles', function () {
-  return gulp.src($.paths.styles.all, {read: false})
-    .pipe($.rimraf());
-});
-
-config = {
+var config = {
   style: 'expanded',
   precision: 10,
   sourcemap: true,
@@ -15,19 +10,19 @@ config = {
     $.paths.scss.bower,
     $.paths.scss.all
   ]
-}
+};
 
-gulp.task('scss', ['clean:styles'], function () {
+gulp.task('scss', ['styles:clean'], function () {
   return gulp.src($.paths.scss.app)
     .pipe($.plumber({errorHandler: $.on.error}))
     .pipe($.rubySass(config))
     .pipe($.filter('**/*.css'))
-    .pipe($.autoprefixer('last 1 version'))
+    .pipe($.autoprefixer($.config.autoprefixer))
     .pipe(gulp.dest($.paths.styles.dest))
-    .pipe($.size({title: 'styles'}))
-    .pipe($.reloadStream());
+    .pipe($.size({title: 'Scss'}))
+    .pipe($.if($.config.live, $.reloadStream()));
 });
 
-gulp.task('watch:scss', function () {
+gulp.task('scss:watch', function () {
   return $.watch({name: 'Scss', glob: $.paths.scss.all}, ['scss'])
 });
