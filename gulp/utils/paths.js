@@ -26,7 +26,7 @@ module.exports = {
   stylus: {
     bower: './bower_components/**/*.styl',
     all: './styles/**/*.styl',
-    app: './styles/app-styl.styl'
+    app: './styles/app-stylus.styl'
   },
   templates: {
     all: './templates/**/*.html'
@@ -44,14 +44,14 @@ module.exports = {
     unit: {
       js: './test/unit/**/*.js',
       coffee: './test/unit/**/*.coffee',
-      dest: './test/build/unit',
-      build: './test/build/unit/**/*.js'
+      dest: './build/test/unit',
+      build: './build/test/unit/**/*.js'
     },
     e2e: {
       js: './test/e2e/**/*.js',
       coffee: './test/e2e/**/*.coffee',
-      dest: './test/build/e2e',
-      build: './test/build/e2e/**/*.js'
+      dest: './build/test/e2e',
+      build: './build/test/e2e/**/*.js'
     }
   }
 };

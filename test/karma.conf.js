@@ -16,7 +16,7 @@ module.exports = function(config) {
       // Loading real JavaScript tests
       '../test/unit/**/*.js',
       // Loading JavaScript files compiled from CoffeeScript tests
-      '../test/build/unit/**/*.js'
+      '../build/test/unit/**/*.js'
     ],
 
     preprocessors: {},
@@ -31,7 +31,7 @@ module.exports = function(config) {
     reporters: ['nested'],
 
     junitReporter: {
-      outputFile: 'build/test-reports/test-results.xml'
+      outputFile: 'build/test/reports/test-results.xml'
     },
 
     // web server port

@@ -8,5 +8,5 @@ gulp.task('usemin', ['deploy:clean', 'build'], function () {
       html: [$.minifyHtml({empty: true})],
       js: [$.uglify(), $.rev()]
     }))
-    .pipe(gulp.dest($.paths.build));
+    .pipe(gulp.dest($.paths.deploy.dest));
 });

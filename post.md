@@ -4,15 +4,11 @@
 
 All source code is available on [GitHub](https://github.com/pauldijou/gulp-kickoff.git). If you are in a hurry, just clone it and check the README.
 
-## Disclaimer
-
-This article will try to focus on generic concepts on how to handle front-end tooling but it will be based on a real project so it will not be fully agnostic. We are using SASS and CoffeeScript for example, so no example using LESS... Maybe later.
-
 ## The problem
 
 Here, at Movio, we recently started a brand new project and we needed to install all the build process for front-end at some point. The one used on previously had started to show some limitations so we decided to build a new one from scratch based on [Gulp](http://gulpjs.com). Why not Grunt or Broccoli? No specific reason, Broccoli is a still a bit too much experimental and Grunt could have done the job just fine but we wanted to give it a try to that streaming idea.
 
-First thing first, we decided on list of features we needed:
+First thing first, we decided on a list of features we needed:
 
 * CSS preprocessor
 * JavaScript preprocessor
@@ -34,27 +30,27 @@ I want to thank [Dan Tello](https://github.com/greypants) for its work on [gulp-
 
 It takes me a bit of time to wrap my head around of Gulp and its streaming system. The core concept is simple: you take a bunch of files, put them on a pipeline, and stream them to a first task. This one will modify them and then stream those new files to the next task in the pipe, and so on. One cool thing about it is that all is virtual during all the pipeline, no read / write to the disk (except if specified). Sometime, you don't even need to read the content of the files. Super fast!
 
-Another concept is that Gulp will try to run as much task in parallel as possible. So if you said to run tasks A, B and C, the three of them will run at the same time. You can, of course, say that B depends on A. This way, Gulp will run both A and C in parallel and start B as soon as A is finished. It starts getting tricky if you want to run A and then C some time, and some other time, you need to run B and then C. The solution for the 1st first sequence would be that C depends on A, but we will also want C to depend on B for the 2nd sequence... except we don't want it to depend on both... dammit! At this point, you might want to rethink your task organization. No silver bullet here.
+Another concept is that Gulp will try to run as much task in parallel as possible. So if you say to run tasks A, B and C, the three of them will run at the same time. You can, of course, say that B depends on A. This way, Gulp will run both A and C in parallel and start B as soon as A is finished. It starts getting tricky if you want to run A and then C, and some other time, you need to run B and then C. The solution for the 1st first sequence would be that C depends on A, but we will also want C to depend on B for the 2nd sequence... except we don't want it to depend on both... dammit! At this point, you might want to rethink your task organization. No silver bullet here.
 
 ## Let's get started!
 
-The first step is how to organize the project. I wanted the project to reflect the final website organization and I didn't want generated resources to bother developers at all. That's why folder names are agnostics: `/styles` will contains whatever you need to write for the design (CSS, SCSS, LESS, Stylus, ...) and same for `/scripts` (JavaScript, CoffeeScript, Typescript, ...). All generated resources will go inside the `/build` folder, keeping the same organization. For example, `/scripts/app.coffee` will be compiled as `/build/scripts/app.js`. This way, you just have to ignore one folder and you can focus on your real source code. In the same time, if you need to reach a compiled resource, it isn't that far away.
+The first step is how to organize the project. I wanted the project to reflect the final website organization and I didn't want generated resources to bother developers at all. That's why folder names are agnostics: `/styles` will contains whatever you need to write for the design (CSS, SCSS, LESS, Stylus, ...) and same for `/scripts` (JavaScript, CoffeeScript, Typescript, ...). All generated resources will go inside the `/build` folder, keeping the same organization. For example, `/scripts/app.coffee` will be compiled as `/build/scripts/app.js`. This way, you just have to ignore one folder and you can focus on your real source code. At the same time, if you need to reach a compiled resource, it isn't that far away.
 
-Next is Gulp organization. You can start with only one file and put everything on it, but the more complex your project goes, the less readable your `gulpfile` will be. Why not having one file for each task? (or several very coupled tasks). Thanks to node modules, we just have to require them in order for the tasks to be loaded. Using something like [require-dir](https://www.npmjs.org/package/require-dir), it's super easy to have a `/gulp` folder with all tasks and just import them. Our final `gulpfile` is so small:
+Next is Gulp organization. You can start with only one file and put everything on it, but the more complex your project becomes, the less readable your `gulpfile` will be. Why not having one file for each task? (or several very coupled tasks). Thanks to node modules, we just have to require them in order for the tasks to be loaded. Using something like [require-dir](https://www.npmjs.org/package/require-dir), it's super easy to have a `/gulp` folder with all tasks and just import them. Our final `gulpfile` is so small:
 
 ~~~ javascript
+var gulp = require('gulp');
+
 // Load all Gulp tasks
 require('require-dir')('./gulp', { recurse: true });
 
 // Let's define our main tasks here
-gulp.task('build', ['sprites', 'scss', 'coffee']);
-
 gulp.task('default', ['sprites', 'watch', 'serve']);
 ~~~
 
 ## Gulp helpers
 
-Before diving into the real stuff (which is managing resources), I will take a bit more time to talk about some helpers we will use with Gulp because there will be all around after that. Some of them are just Gulp plugins, other ones are inside `/gulp/utils`.
+Before diving into the real stuff (which is managing resources), I will take a bit more time to talk about some helpers we will use with Gulp because there will be all around after that. Some of them are just Gulp plugins, other ones are inside [/gulp/utils](https://github.com/pauldijou/gulp-kickoff/tree/master/gulp/utils).
 
 ### The magic $
 
@@ -70,7 +66,7 @@ var $ = require('./utils/$.js');
 // You can now use any plugin with $.pluginName
 ~~~
 
-That's nice right! But then, I wanted to set all my file paths in once place (to stay DRY and do not copy/paste them), and use common filters, and user common functions, and so on... And I was thinking: "Why not put all that stuff inside the same `$` so that everyone can access it?". That's what I did.
+That's nice right! But then, I wanted to set all my paths in one place (to stay DRY and do not copy/paste them), and use common filters, and user common functions, and so on... And I was thinking: "Why not put all that stuff inside the same `$` so that everyone can access it?". That's what I did.
 
 ~~~ javascript
 var plugins     = require('gulp-load-plugins')();
@@ -103,7 +99,7 @@ module.exports.utils = {
 // Expose non-plugin modules
 module.exports.lazypipe = require('lazypipe');
 
-// Expose event handling
+// Expose event handlers
 module.exports.on = {
   error: require('./onError')
 };
@@ -120,25 +116,25 @@ module.exports.filters = {
 };
 
 // Expose all supported args from command line
-module.exports.args = {
+module.exports.config = {
   mocked: argv.mocked || argv.m,
   latency: argv.latency || 100
 };
 ~~~
 
-⚠ Obviously, you need to be cautions about one point: no having naming conflict between a Gulp plugin and your own stuff. For example, if I was using a plugin named `gulp-utils`, I couldn't set `module.exports.utils`, otherwise the plugin definition would be override.
+⚠ Obviously, you need to be cautions about one point: not having naming conflict between a Gulp plugin and your own stuff. For example, if I was using a plugin named `gulp-utils`, I couldn't set `module.exports.utils`, otherwise the plugin definition would be overriden.
 
 ### Plumber and watch
 
-One thing that quickly bothered me was my `gulp` process crashing each time my watchers was trying to compiled a resource with a syntax error and failing. I want the error to bubble up to me but I also want to keep the process to keep running so that as soon as I fix it, it will grab it and compile it correctly. In order to achieve that, we are using the [gulp-plumber](npmjs.org/package/gulp-plumber) plugin. With that, your stream will never stop on a failure and you can specify an error handler to manage any error. Pretty cool.
+One thing that quickly bothered me was my `gulp` process crashing each time my watchers was trying to compiled a resource with a syntax error and failing. I want the error to bubble up to me but I also want to keep the process running so that as soon as I fix it, it will grab it and compile it correctly. In order to achieve that, we are using the [gulp-plumber](npmjs.org/package/gulp-plumber) plugin. With that, your stream will never stop on a failure and you can specify an error handler to manage any error. Pretty cool.
 
 Speaking of watchers, since we will now have endless streams and incremental compilation, we decided to use [gulp-watch](https://www.npmjs.org/package/gulp-watch) rather than the "native" `gulp.watch`. We didn't have any problem with the last one, but `gulp-watch` was just fitting our needs better.
 
 ### Notifications
 
-Some developers always have their shell displayed in their screen, some don't. It means we need a way to notify developers when something went wrong with the build process. Using the [gulp-notify](https://www.npmjs.org/package/gulp-notify) plugin, it is super easy to do so and have native notification that will appear in a corner of your screen. We did customize the default templating to display the actual line in error. Also, we are displaying the full stacktrace in the shell so that you can still read it if necessary.
+Some developers always have their shell displayed in their screen, some don't. It means we need a way to notify developers when something went wrong with the build process. Using the [gulp-notify](https://www.npmjs.org/package/gulp-notify) plugin, it is super easy to do so and have native notifications that will appear in a corner of your screen. We did [customize the default templating](https://github.com/pauldijou/gulp-kickoff/blob/master/gulp/utils/onError.js) to display the actual line in error. Also, we are displaying the full stacktrace in the shell so that you can still read it if necessary.
 
-⚠ Sometimes, when doing crazy code, there are a bit too many notifications (espacially if you have something like an auto-save on your text editor), and I couldn't find a way to reduce the display duration (which is actually quite long to be honest). So there is still place for improvement.
+⚠ Sometimes, when doing crazy code, there are a bit too many notifications (especially if you have something like an auto-save on your text editor), and I couldn't find a way to reduce the display duration (which is actually quite long to be honest). So there is still place for improvement.
 
 ## Resources
 
@@ -148,12 +144,12 @@ A cleaning task looks like:
 
 ~~~ javascript
 gulp.task('clean:scripts', function {
-  return gulp.src($.paths.scripts.all, {read: false})
+  return gulp.src($.paths.scripts.build, {read: false})
     .pipe($.rimraf())
 });
 ~~~
 
-Since we will remove files, we don't need to read their content: `{read: false}`. After that, it's just a matter of passing it to the [gulp-rimraf](https://www.npmjs.org/package/gulp-rimraf) plugin.
+Since we will remove files, we don't need to read their content: `{read: false}`. After that, it's just a matter of passing it to the [gulp-rimraf](https://www.npmjs.org/package/gulp-rimraf) plugin to delete them.
 
 A compilation task is about taking a bunch of files and compile them, right? So we can actually use the same pipeline for both the full compilation (at startup) and the incremental one, all that matter is the files we pass in entry. To stay DRY, we will define the common pipeline using [lazypipe](https://www.npmjs.org/package/lazypipe) and then pipe in if from different endpoints.
 
@@ -162,8 +158,6 @@ A compilation task is about taking a bunch of files and compile them, right? So 
 compile = $.lazypipe()
   .pipe($.plumber, {errorHandler: $.on.error})
   .pipe($.coffee, {bare: true})
-  // Angular specific
-  // .pipe($.ngAnnotate)
   .pipe(gulp.dest, $.paths.scripts.dest)
   .pipe($.reloadStream);
 ~~~
@@ -173,36 +167,35 @@ This is just a "virtual" pipeline that doesn't do anything by itself. But if you
 1. Transform the stream with plumber so that it doesn't stop in case of error
 * Add and error handler to notify user if something go wrong
 * Compiled all files from CoffeeScript to JavaScript
-* (Eventually, annotate AngularJS injection stuff)
 * Write the new files to the destination `/build` folder
 * Live-reload browsers from the stream of new files
 
-As you are reading those line and comparing with the source code, you can fully grasp why writing streams is so nice: you are coding exactly what you have in mind, a succession of operations to be performed to achieve the final result. And it is extremely readable.
+As you are reading those line and comparing with the code sample, you can fully grasp why writing streams is so nice: you are coding exactly what you have in mind, a succession of operations to be performed to achieve the final result. And it is extremely readable.
 
 Anyway, once we have this pipeline ready, we can use it in two different configurations:
 
 ~~~ javascript
 // Compiling all files
-gulp.task('coffee', ['clean:scripts'], function () {
-  return gulp.src($.paths.coffee.all).pipe(compile());
+gulp.task('coffee', ['scripts:clean'], function () {
+  return gulp.src($.paths.coffee.all)
+    .pipe(compile());
 });
 
 // Compiling only modified files
-gulp.task ('watch:coffee', ['coffee'], function () {
+gulp.task ('coffee:watch', ['scripts:clean'], function () {
   return $.watch({name: 'Coffee', glob: $.paths.coffee.all})
-    .pipe($.filter($.filters.changed))
     .pipe(compile());
 });
 ~~~
 
-The first task, `coffee`, will just take all coffee files and stream them to our common pipeline. That's it! It will also clean the old ones since it depends on the `clean:scripts` task. And yeah, we don't really need live-reloading here most of the time, but whatever, if the server isn't running, our last pipeline step will just do nothing.
+The first task, `coffee`, will just take all coffee files and stream them to our common pipeline. That's it! It will also clean the old ones since it depends on the `scripts:clean` task. And yeah, we don't really need live-reloading here most of the time, but whatever, if the server isn't running, our last pipeline step will just do nothing.
 
-The second task, `watch:coffee`, will do the exact same thing since it depends on `coffee`, and then monitor all files and only stream the modified to the pipeline. I guess we can call it incremental compilation with live-reload.
+The second task, `coffee:watch`, will do the exact same thing and then monitor all files and only stream the modified to the pipeline. I guess we can call it incremental compilation with live-reload. By the way, it will indeed perform a full compilation at startup because it will stream every files from the glob when starting to watch them.
 
 It is nearly the same for SCSS files. The only main difference is on the watcher:
 
 ~~~ javascript
-gulp.task('watch:scss', function () {
+gulp.task('scss:watch', function () {
   return $.watch({name: 'Scss', glob: $.paths.scss.all}, ['scss'])
 });
 ~~~
@@ -240,7 +233,7 @@ gulp.task('serve', function () {
 
 And for live-reloading we have two solutions:
 
-* calling `.pipe($.reloadStream)` in our stream (see coffee example). This one will do hot-deploy if possible.
+* calling `.pipe($.reloadStream())` in our stream (see coffee example). This one will do hot-deploy if possible.
 * running the task `sync:reload`. This one will always refresh the browser.
 
 ~~~ javascript
@@ -252,7 +245,7 @@ gulp.task('sync:reload', function () {
 });
 ~~~
 
-What about that middleware stuff? I will no fully explain it here, but the idea is that if `$.args.mocked` is true, we want the API to return local data rather than targeting the real remote API. By plugin a middleware, we can intercept request and return whatever we want. In the sample, any request starting with `/api` will be intercepted and it will try to load a local node module or JSON file as the response.
+What about that middleware stuff? I will no fully explain it here, but the idea is that if `$.config.mocked` is true, we want the API to return local data rather than targeting the real remote API. By plugin a middleware, we can intercept request and return whatever we want. In the sample, any request starting with `/api` will be intercepted and it will try to load a local node module or JSON file as the response. You can [read the commented code](https://github.com/pauldijou/gulp-kickoff/blob/master/gulp/serve.js) for more infos.
 
 ## Tests
 
@@ -262,9 +255,9 @@ One thing that would have been awesome is to only run tests based on the last mo
 
 ### Unit testing
 
-We are using Karma to run our unit tests. It allows us to easily test on different browsers. I tried to use Gulp watchers to monitor files and run Karma again... but finally, I gave up and now using the `autoWatch` feature. We are still using Gulp to do incremental compilation of our tests written in CoffeeScript.
+We are using Karma to run our unit tests. It allows us to easily test on different browsers. I tried to use Gulp watchers to monitor files and run Karma only with the streamed files from the watchers... but finally, I gave up and now using the `autoWatch` feature. We are still using Gulp to do incremental compilation of our tests written in CoffeeScript.
 
-The main problem of this solution is to have to run all tests during startup. when you have thousand of tests, it might take a bit of time. BUT! it assures you that all is fine before you begin doing some new stuff. Which is not that bad... so it's like a trade off. Could be better but finally not so bad.
+The main problem of this solution is to have to run all tests during startup. When you have thousand of tests, it might take a bit of time. BUT! it assures you that all is fine before you begin doing some new stuff. Which is not that bad... so it's like a trade off. Could be better but finally not so bad.
 
 ### End to end testing with Protractor
 
@@ -274,7 +267,7 @@ Not much to say, it's quite the same as unit testing except all files are manage
 
 ## Production
 
-At some point, hopefuly, we need to package and deploy our website. There are two main steps to achieve that. One is minifying and optimizing resources. The other is versionning them (because... browser caching). We will do that by using [gulp-usemin](link) which allow you to apply a pipeline to some resources extracted from an HTML file and replace them... Let's take an example to understand it better. Let's say you have a bunch of `scripts` tags inside your `index.html`. You want to concatenate them into a single file, minify it and append a version suffix. For that, you only need to wrap the tags inside some specific comments:
+At some point, hopefuly, we need to package and deploy our website. There are two main steps to achieve that. One is minifying and optimizing resources. The other is versionning them (because... browser caching). We will do that by using [gulp-usemin](https://www.npmjs.org/package/gulp-usemin) which allow you to apply a pipeline to some resources extracted from an HTML file and replace them... Let's take an example to understand it better. Let's say you have a bunch of `scripts` tags inside your `index.html`. You want to concatenate them into a single file, minify it and append a version suffix. For that, you only need to wrap the tags inside some specific comments:
 
 ~~~ markup
 <!-- build:js scripts/app.min.js -->
@@ -297,12 +290,16 @@ gulp.task('usemin', ['clean:build', 'build'], function () {
       // JS pipeline: uglify (concat + minify), append version
       js: [$.uglify(), $.rev()]
     }))
-    .pipe(gulp.dest($.paths.build));
+    .pipe(gulp.dest($.paths.build.dest));
 });
 ~~~
 
-As we can see, all our files will be uglified to produced a final `app.min.js` file (1st step of the pipeline) and then, thanks to [gulp-rev](link), it will append a suffix to the filename based on a hash of the file content, like `app.min-06e3ba26.js`, so that each time you change the content, a new name will be assigned. Just perfect for browser caching.
+As we can see, all our JavaScript files will be uglified to produced a final `app.min.js` file (1st step of the pipeline) and then, thanks to [gulp-rev](https://www.npmjs.org/package/gulp-rev), it will append a suffix to the filename based on a hash of the file content, like `app.min-06e3ba26.js`, so that each time you change the content, a new name will be assigned. Just perfect for browser caching.
 
 We could use whatever tools we want. If you prefer CSSO than basic CSS minification, just replace `$.minifyCss` with `$.csso` (after installing the plugin) and you're done!
 
-The final result will be inside the `build` folder, including the new `index.html` with the new resource imports based on the new generated names. You just need to copy/paste it to your production server, and that's it. Enjoy!
+The final result will be inside the `deploy` folder, including the new `index.html` with the new resource imports based on the new generated names. You just need to copy/paste it to your production server, and that's it. Enjoy!
+
+## Final thoughts
+
+We didn't cover all the topics handled by the project (like SVG to icons or image minification) but feel free to [dive into the code](https://github.com/pauldijou/gulp-kickoff) (which isn't really hard), check the [README](https://github.com/pauldijou/gulp-kickoff/blob/master/README.md) and kickoff your next big project using Gulp!

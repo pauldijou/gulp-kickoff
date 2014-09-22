@@ -19,8 +19,3 @@ gulp.task('test:clean', ['unit:clean', 'e2e:clean']);
 //   return gulp.src($.paths.build.dest, {read: false})
 //     .pipe($.rimraf());
 // });
-
-gulp.task('deploy:clean', function () {
-  return gulp.src($.paths.deploy.dest, {read: false})
-    .pipe($.rimraf());
-});

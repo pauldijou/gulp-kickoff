@@ -45,6 +45,8 @@ Then go to [localhost:8000](http://localhost:8000). You will have live-reloading
 gulp
 ~~~
 
+⚠ Obviously, this task will not really work by default since there is no real backend provided.
+
 ## Testing
 
 ### Unit testing
@@ -54,7 +56,7 @@ gulp
 gulp unit
 
 # Run all tests once and then only changed files
-gulp watch:unit
+gulp unit:watch
 ~~~
 
 ### End to end testing
@@ -71,7 +73,14 @@ gulp
 gulp e2e
 
 # Run all tests once and then only changed files
-gulp watch:e2e
+gulp e2e:watch
 ~~~
 
 ⚠ If writing tests in CoffeeScript, you need to replace the `by` global variable from Protractor with `from`, which is just an alias. This is due to the fact that `by` is a reserved keyword in CoffeeScript so the compilation would failed if using it as a variable name. All aliases are defined in `test/protractor.adapter.js` and the injection of this file is done automically by Gulp when compiling CoffeeScript to JavaScript.
+
+## Deploy
+
+~~~ shell
+# Produce the final app in the /deploy folder
+gulp deploy
+~~~
