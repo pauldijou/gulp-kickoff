@@ -7,23 +7,27 @@ gulp.task('unit:clean', function () {
     .pipe($.rimraf());
 });
 
-compile = $.lazypipe()
+var compileCoffee = $.lazypipe()
   .pipe($.plumber, {errorHandler: $.on.error})
   .pipe($.coffee, {bare: true})
   .pipe(gulp.dest, $.paths.test.unit.dest);
 
-changedCoffee = function (file) {
-  if ($.utils.is.coffee(file)){
-    return $.utils.is.changed(file);
-  } else {
-    return true;
-  }
-};
+var compileTypescript = $.lazypipe()
+  .pipe($.plumber, {errorHandler: $.on.error})
+  .pipe($.typescrit)
+  .pipe(gulp.dest, $.paths.test.unit.dest);
 
-gulp.task('unit:scripts', ['unit:clean', 'scripts:build'], function () {
+gulp.task('unit:scripts:coffee', ['unit:clean'], function () {
   return gulp.src($.paths.test.unit.coffee)
-    .pipe(compile());
+    .pipe(compileCoffee());
 });
+
+gulp.task('unit:scripts:typescript', ['unit:clean'], function () {
+  return gulp.src($.paths.test.unit.typescript)
+    .pipe(compileTypescript());
+});
+
+gulp.task('unit:scripts', ['unit:scripts:coffee', 'unit:scripts:typescript']);
 
 gulp.task('unit', ['unit:scripts'], function (done) {
   karma.start({
@@ -39,10 +43,14 @@ gulp.task('karma:watch', ['unit:scripts'], function (done) {
   }, done);
 });
 
-gulp.task('unit:watch:coffee', function () {
-  return $.watch({name: 'Unit', glob: $.paths.test.unit.coffee})
-    .pipe($.filter($.filters.changed))
-    .pipe(compile());
+gulp.task('unit:watch:coffee', ['unit:scripts:coffee'], function () {
+  return $.watch($.paths.test.unit.coffee, {name: 'Unit Coffee'})
+    .pipe(compileCoffee());
 });
 
-gulp.task('unit:watch', ['karma:watch', 'unit:watch:coffee', 'scripts:watch']);
+gulp.task('unit:watch:typescript', ['unit:scripts:typescript'], function () {
+  return $.watch($.paths.test.unit.typescript, {name: 'Unit Typescript'})
+    .pipe(compileTypescript());
+});
+
+gulp.task('unit:watch', ['karma:watch', 'unit:watch:coffee', , 'unit:watch:typescript', 'scripts:watch']);

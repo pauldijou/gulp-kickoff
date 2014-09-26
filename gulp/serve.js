@@ -110,7 +110,7 @@ gulp.task('serve', function () {
       baseDir: './',
       middleware: middleware
     },
-    port: 8000,
+    port: $.config.port,
     open: false,
     notify: false
   };

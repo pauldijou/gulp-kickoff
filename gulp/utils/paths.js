@@ -1,25 +1,28 @@
 module.exports = {
   styles: {
-    build: './build/styles/**/*.scss',
+    dir: './styles',
+    build: './build/styles/**/*.css',
     dest: './build/styles'
   },
   scripts: {
+    dir: './scripts',
     build: './build/scripts/**/*.js',
     dest: './build/scripts'
   },
+  bower: {
+    dir: './bower_components'
+  },
   coffee: {
-    all: './scripts/**/*.coffee',
+    all: './scripts/**/*.coffee'
   },
   typescript: {
-    all: './scripts/**/*.ts',
+    all: './scripts/**/*.ts'
   },
   scss: {
-    bower: './bower_components/**/*.scss',
     all: './styles/**/*.scss',
     app: './styles/app-scss.scss'
   },
   less: {
-    bower: './bower_components/**/*.less',
     all: './styles/**/*.less',
     app: './styles/app-less.less'
   },
@@ -32,24 +35,26 @@ module.exports = {
     all: './templates/**/*.html'
   },
   images: {
-    final: ['./images/*.svg']
+    all: ['./images/**/*', '!./images/icons/**/*.svg']
   },
   build: {
-    dest: './build'
+    dir: './build'
   },
   deploy: {
-    dest: './deploy'
+    dir: './deploy'
   },
   test: {
     unit: {
       js: './test/unit/**/*.js',
       coffee: './test/unit/**/*.coffee',
+      typescript: './test/unit/**/*.ts',
       dest: './build/test/unit',
       build: './build/test/unit/**/*.js'
     },
     e2e: {
       js: './test/e2e/**/*.js',
       coffee: './test/e2e/**/*.coffee',
+      typescript: './test/e2e/**/*.ts',
       dest: './build/test/e2e',
       build: './build/test/e2e/**/*.js'
     }

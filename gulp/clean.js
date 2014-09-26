@@ -14,8 +14,3 @@ gulp.task('scripts:clean', function () {
 gulp.task('clean', ['scripts:clean', 'styles:clean']);
 
 gulp.task('test:clean', ['unit:clean', 'e2e:clean']);
-
-// gulp.task('build:clean', function () {
-//   return gulp.src($.paths.build.dest, {read: false})
-//     .pipe($.rimraf());
-// });

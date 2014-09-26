@@ -4,11 +4,11 @@ var $       = require('./utils/$');
 var config = {
   style: 'expanded',
   precision: 10,
-  sourcemap: true,
-  sourcemapPath: './',
+  'sourcemap=file': true,
+  sourcemapPath: '../../scripts',
   loadPath: [
-    $.paths.scss.bower,
-    $.paths.scss.all
+    $.paths.bower.dir,
+    $.paths.styles.dir
   ]
 };
 
@@ -23,6 +23,8 @@ gulp.task('scss', ['styles:clean'], function () {
     .pipe($.if($.config.live, $.reloadStream()));
 });
 
-gulp.task('scss:watch', function () {
-  return $.watch({name: 'Scss', glob: $.paths.scss.all}, ['scss'])
+gulp.task('scss:watch', ['scss'], function () {
+  return $.watch($.paths.scss.all, {name: 'Scss'}, function (files, cb) {
+    return gulp.start('scss', cb);
+  });
 });

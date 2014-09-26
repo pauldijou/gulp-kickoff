@@ -36,9 +36,29 @@ module.exports.on = {
 
 // Expose all supported args from command line
 module.exports.config = {
+  styles: [],
+  scripts: [],
   mocked: argv.mocked || argv.m,
   latency: argv.latency || 100,
+  port: parseInt(argv.port, 10) || 8000,
   sync: argv.sync === undefined || argv.sync !== 'false',
   live: argv.live === undefined || argv.live !== 'false',
   autoprefixer: argv.autoprefixer || 'last 1 version'
 };
+
+// A bit of styles/scripts configuration
+// scss:start
+module.exports.config.styles.push('scss');
+// scss:end
+// less:start
+module.exports.config.styles.push('less');
+// less:end
+// stylus:start
+module.exports.config.styles.push('stylus');
+// stylus:end
+// coffee:start
+module.exports.config.scripts.push('coffee');
+// coffee:end
+// typescript:start
+module.exports.config.scripts.push('typescript');
+// typescript:end

@@ -1,12 +1,26 @@
 var gulp    = require('gulp');
 var $       = require('./utils/$');
 
+var requireCompressionRegex = /(css|js)$/
+
+function requireCompression(file) {
+  return requireCompressionRegex.test(file.path);
+}
+
 gulp.task('usemin', ['deploy:clean', 'build'], function () {
-  return gulp.src(['./index.html', $.paths.templates.all], {base: './'})
+  return gulp.src(['./index.html', $.paths.templates.all], {base: '.'})
     .pipe($.usemin({
-      css: [$.minifyCss(), 'concat', $.rev()],
       html: [$.minifyHtml({empty: true})],
-      js: [$.uglify(), $.rev()]
+      css:  ['concat', $.minifyCss(), $.rev()],
+      js:   ['concat', $.uglify(), $.rev()]
     }))
-    .pipe(gulp.dest($.paths.deploy.dest));
+    .pipe(gulp.dest($.paths.deploy.dir))
+    .pipe($.ignore.include(requireCompression))
+    .pipe($.size({title: 'Assets before gzip compression'}))
+    .pipe($.gzip())
+    // Or, for a little better compression
+    // but takes a bit more time
+    // .pipe($.zopfli())
+    .pipe($.size({title: 'Assets after gzip compression'}))
+    .pipe(gulp.dest($.paths.deploy.dir));
 });
