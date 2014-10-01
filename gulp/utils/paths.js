@@ -18,6 +18,9 @@ module.exports = {
   typescript: {
     all: './scripts/**/*.ts'
   },
+  browserify: {
+    app: './scripts/browserify.js'
+  },
   scss: {
     all: './styles/**/*.scss',
     app: './styles/app-scss.scss'

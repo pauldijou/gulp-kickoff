@@ -14,7 +14,7 @@ var compileCoffee = $.lazypipe()
 
 var compileTypescript = $.lazypipe()
   .pipe($.plumber, {errorHandler: $.on.error})
-  .pipe($.typescrit)
+  .pipe($.typescript)
   .pipe(gulp.dest, $.paths.test.unit.dest);
 
 gulp.task('unit:scripts:coffee', ['unit:clean'], function () {

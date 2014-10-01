@@ -1,4 +1,5 @@
-var gulp = require('gulp');
+var gulp   = require('gulp');
+var $      = require('./utils/$');
 
 gulp.task('styles:build', $.config.styles);
 

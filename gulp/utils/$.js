@@ -14,9 +14,13 @@ module.exports.reloadStream = function () {
 };
 
 // Expose some other modules (local or not)
-module.exports.lazypipe = require('lazypipe');
-module.exports.paths = require('./paths');
-module.exports.utils = utils;
+module.exports.through2   = require('through2');
+module.exports.lazypipe   = require('lazypipe');
+module.exports.browserify = require('browserify');
+module.exports.watchify   = require('watchify');
+module.exports.source     = require('vinyl-source-stream');
+module.exports.paths      = require('./paths');
+module.exports.utils      = utils;
 
 // Expose common useful filters
 module.exports.filters = {
@@ -43,7 +47,7 @@ module.exports.config = {
   port: parseInt(argv.port, 10) || 8000,
   sync: argv.sync === undefined || argv.sync !== 'false',
   live: argv.live === undefined || argv.live !== 'false',
-  autoprefixer: argv.autoprefixer || 'last 1 version'
+  autoprefixer: argv.autoprefixer && JSON.parse(argv.autoprefixer) || ['> 1%', 'last 2 versions', 'Firefox ESR', 'Opera 12.1']
 };
 
 // A bit of styles/scripts configuration
