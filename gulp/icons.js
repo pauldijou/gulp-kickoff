@@ -1,7 +1,7 @@
 var gulp    = require('gulp');
 var $       = require('./utils/$');
 
-gulp.task('sprites', function () {
+gulp.task('icons', function () {
   return gulp.src('./images/icons/*.svg')
     .pipe($.svgSprites({
       mode: 'symbols',

@@ -13,7 +13,7 @@ var protractor = $.lazypipe()
 
 var glob = [$.paths.test.e2e.js];
 
-// coffee:start
+//@ifdef coffee
 glob.push($.paths.test.e2e.coffee);
 
 var compileCoffee = $.lazypipe()
@@ -27,9 +27,9 @@ gulp.task('e2e:scripts:coffee', ['e2e:clean'], function () {
   return gulp.src($.paths.test.e2e.coffee)
     .pipe(compileCoffee());
 });
-// coffee:end
+//@endif
 
-// typescript:start
+//@ifdef typescript
 glob.push($.paths.test.e2e.typescript);
 
 var compileTypescript = $.lazypipe()
@@ -41,7 +41,7 @@ gulp.task('e2e:scripts:typescript', ['e2e:clean'], function () {
   return gulp.src($.paths.test.e2e.typescript)
     .pipe(compileTypescript());
 });
-// typescript:end
+//@endif
 
 gulp.task('e2e', ['e2e:scripts'], function () {
   return gulp.src([$.paths.test.e2e.js, $.paths.test.e2e.build])
@@ -52,12 +52,12 @@ gulp.task('e2e', ['e2e:scripts'], function () {
 gulp.task('e2e:watch', ['e2e:scripts'], function () {
   return $.watch(glob, {name: 'E2E'}, function (files) {
     return files
-      // coffee:start
+      //@ifdef coffee
       .pipe($.if($.utils.is.coffee, compileCoffee()))
-      // coffee:end
-      // typescript:start
+      //@endif
+      //@ifdef typescript
       .pipe($.if($.utils.is.typescript, compileTypescript()))
-      // typescript:end
+      //@endif
       .pipe(protractor());
   });
 });

@@ -51,18 +51,18 @@ module.exports.config = {
 };
 
 // A bit of styles/scripts configuration
-// scss:start
+//@ifdef scss
 module.exports.config.styles.push('scss');
-// scss:end
-// less:start
+//@endif
+//@ifdef less
 module.exports.config.styles.push('less');
-// less:end
-// stylus:start
+//@endif
+//@ifdef stylus
 module.exports.config.styles.push('stylus');
-// stylus:end
-// coffee:start
+//@endif
+//@ifdef coffee
 module.exports.config.scripts.push('coffee');
-// coffee:end
-// typescript:start
+//@endif
+//@ifdef typescript
 module.exports.config.scripts.push('typescript');
-// typescript:end
+//@endif

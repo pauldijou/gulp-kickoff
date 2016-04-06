@@ -1,7 +1,7 @@
 var gulp    = require('gulp');
 var $       = require('./utils/$');
 
-gulp.task('images', ['deploy:clean', 'sprites'], function () {
+gulp.task('images', ['deploy:clean', 'icons'], function () {
   return gulp.src($.paths.images.all, {base: '.'})
     .pipe($.size({title: 'Images before optimizations'}))
     .pipe($.imagemin())
